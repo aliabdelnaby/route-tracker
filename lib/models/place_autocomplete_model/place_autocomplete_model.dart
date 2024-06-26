@@ -9,7 +9,7 @@ class PlaceModel {
   String? reference;
   StructuredFormatting? structuredFormatting;
   List<Term>? terms;
-  List<String>? types;
+  List<dynamic>? types;
 
   PlaceModel({
     this.description,
