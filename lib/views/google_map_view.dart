@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:route_tracker/models/place_autocomplete_model/place_autocomplete_model.dart';
-import 'package:route_tracker/models/place_details_model/place_details_model.dart';
 import 'package:route_tracker/utils/google_maps_place_service.dart';
 import 'package:route_tracker/utils/location_service.dart';
 import 'package:route_tracker/widgets/custom_list_view_places.dart';
 import 'package:route_tracker/widgets/custom_search_text_field.dart';
+import 'package:uuid/uuid.dart';
 
 class GoogleMapView extends StatefulWidget {
   const GoogleMapView({super.key});
@@ -21,13 +21,18 @@ class _GoogleMapViewState extends State<GoogleMapView> {
   late LocationServices locationService;
   late TextEditingController textEditingController;
   late GoogleMapsPlaceService googleMapsPlaceService;
+  late Uuid uuid;
+  String? sessiontoken;
   Set<Marker> markers = {};
   List<PlaceModel> places = [];
 
   @override
   void initState() {
     initialCameraPosition = const CameraPosition(
-      target: LatLng(26.839663247801774, 29.71044929719575),
+      target: LatLng(
+        26.839663247801774,
+        29.71044929719575,
+      ),
     );
     locationService = LocationServices();
     textEditingController = TextEditingController();
@@ -39,9 +44,11 @@ class _GoogleMapViewState extends State<GoogleMapView> {
     googleMapsPlaceService = GoogleMapsPlaceService();
     textEditingController.addListener(
       () async {
+        sessiontoken ??= uuid.v4();
         if (textEditingController.text.isNotEmpty) {
           var result = await googleMapsPlaceService.getPredictions(
             input: textEditingController.text,
+            sessiontoken: sessiontoken!,
           );
           places.clear();
           places.addAll(result);
@@ -86,6 +93,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
                 onPlaceSelect: (placeDetailsModel) async {
                   textEditingController.clear();
                   places.clear();
+                  sessiontoken = null;
                   setState(() {});
                 },
                 places: places,
