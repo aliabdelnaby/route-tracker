@@ -3,7 +3,7 @@ import 'package:route_tracker/models/place_autocomplete_model/place_autocomplete
 import 'package:http/http.dart' as http;
 import 'package:route_tracker/models/place_details_model/place_details_model.dart';
 
-class GoogleMapsPlaceService {
+class PlaceService {
   final String baseUrl = 'https://maps.googleapis.com/maps/api/place';
   final String apiKey = 'AIzaSyB7cXZs7rYf0S9yBpZn0q9QpKfU5CpK5z8';
   Future<List<PlaceModel>> getPredictions({

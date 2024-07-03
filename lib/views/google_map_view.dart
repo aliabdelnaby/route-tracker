@@ -26,7 +26,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
   late CameraPosition initialCameraPosition;
   late LocationServices locationService;
   late TextEditingController textEditingController;
-  late GoogleMapsPlaceService googleMapsPlaceService;
+  late PlaceService placeService;
   late RoutesService routesService;
   late Uuid uuid;
   late LatLng currentLocation;
@@ -48,12 +48,12 @@ class _GoogleMapViewState extends State<GoogleMapView> {
   }
 
   void fetchPredictions() {
-    googleMapsPlaceService = GoogleMapsPlaceService();
+    placeService = PlaceService();
     textEditingController.addListener(
       () async {
         sessiontoken ??= uuid.v4();
         if (textEditingController.text.isNotEmpty) {
-          var result = await googleMapsPlaceService.getPredictions(
+          var result = await placeService.getPredictions(
             input: textEditingController.text,
             sessiontoken: sessiontoken!,
           );
@@ -111,7 +111,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
                   displayRoute(points);
                 },
                 places: places,
-                googleMapsPlaceService: googleMapsPlaceService,
+                googleMapsPlaceService: placeService,
               ),
             ],
           ),
