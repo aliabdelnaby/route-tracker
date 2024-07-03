@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:route_tracker/models/location_info/lat_lng.dart';
 import 'package:route_tracker/models/location_info/location.dart';
 import 'package:route_tracker/models/location_info/location_info.dart';
 import 'package:route_tracker/models/place_autocomplete_model/place_autocomplete_model.dart';
-import 'package:route_tracker/models/routes_model/route.dart';
 import 'package:route_tracker/models/routes_model/routes_model.dart';
 import 'package:route_tracker/utils/google_maps_place_service.dart';
 import 'package:route_tracker/utils/location_service.dart';
@@ -34,6 +32,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
   late LatLng destination;
   String? sessiontoken;
   Set<Marker> markers = {};
+  Set<Polyline> polylines = {};
   List<PlaceModel> places = [];
 
   @override
@@ -81,6 +80,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
       children: [
         GoogleMap(
           markers: markers,
+          polylines: polylines,
           zoomControlsEnabled: false,
           initialCameraPosition: initialCameraPosition,
           onMapCreated: (controller) {
@@ -106,7 +106,8 @@ class _GoogleMapViewState extends State<GoogleMapView> {
                     placeDetailsModel.geometry!.location!.lat!,
                     placeDetailsModel.geometry!.location!.lng!,
                   );
-                  getRouteData();
+                  var points = await getRouteData();
+                  displayRoute(points);
                 },
                 places: places,
                 googleMapsPlaceService: googleMapsPlaceService,
@@ -187,5 +188,17 @@ class _GoogleMapViewState extends State<GoogleMapView> {
     List<LatLng> points =
         result.map((e) => LatLng(e.latitude, e.longitude)).toList();
     return points;
+  }
+
+  void displayRoute(List<LatLng> points) {
+    Polyline route = Polyline(
+      polylineId: const PolylineId("route"),
+      color: Colors.blue,
+      width: 3,
+      points: points,
+    );
+
+    polylines.add(route);
+    setState(() {});
   }
 }

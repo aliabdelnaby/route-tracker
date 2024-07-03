@@ -34,7 +34,12 @@ class RoutesService {
       "units": "IMPERIAL"
     };
 
-    var response = await http.post(url, headers: headers, body: body);
+    var response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
     if (response.statusCode == 200) {
       return RoutesModel.fromJson(jsonDecode(response.body));
     } else {
