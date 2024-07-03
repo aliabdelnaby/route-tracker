@@ -1,16 +1,21 @@
-# route_tracker
+# Route Tracker
 
-A new Flutter project.
+# Google Maps Integration Course Project
+This repository contains the project files for the course I completed on Udemy: Google Maps Integration Guide.
+## What I learned:
+This course covers the following topics:
+ - Google Maps and Flutter Basics: Understand the essentials of Flutter and how Google Maps can be incorporated into your apps.
 
-## Getting Started
+ - Embedding Google Maps: Learn step-by-step methods to embed Google Maps into Flutter applications.
 
-This project is a starting point for a Flutter application.
+ - Customizing Maps: Discover how to customize the appearance and feel of maps, including styles, markers, and overlays.
 
-A few resources to get you started if this is your first Flutter project:
+ - Route Creation and Management: Gain skills in creating, managing, and displaying routes within your app.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+ - Drawing Custom Shapes: Learn to draw and manipulate custom shapes like circles, polygons, and lines to represent various geographical features.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+ - Advanced Navigation: Delve into complex navigation techniques, including dynamic route updates and integration with other navigation tools.
+
+ - Real-Time Location Tracking: Master the art of tracking and displaying real-time user locations within your app.
+
+ - Practical Case Studies: Apply your knowledge through practical examples and real-world scenarios to solidify your understanding.
