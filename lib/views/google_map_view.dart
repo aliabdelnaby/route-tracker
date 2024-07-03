@@ -1,3 +1,5 @@
+// ignore_for_file: unused_catch_clause
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -22,7 +24,6 @@ class _GoogleMapViewState extends State<GoogleMapView> {
   late CameraPosition initialCameraPosition;
   late TextEditingController textEditingController;
   late Uuid uuid;
-  late LatLng currentLocation;
   late LatLng destination;
   String? sessiontoken;
   Set<Marker> markers = {};
@@ -63,6 +64,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
   void dispose() {
     mapController.dispose();
     textEditingController.dispose();
+    debounce?.cancel();
     super.dispose();
   }
 
@@ -99,7 +101,6 @@ class _GoogleMapViewState extends State<GoogleMapView> {
                     placeDetailsModel.geometry!.location!.lng!,
                   );
                   var points = await mapServices.getRouteData(
-                    currentLocation: currentLocation,
                     destination: destination,
                   );
                   mapServices.displayRoute(
@@ -119,11 +120,14 @@ class _GoogleMapViewState extends State<GoogleMapView> {
     );
   }
 
-  void updateCurrentLocation() async {
+  void updateCurrentLocation() {
     try {
-      currentLocation = await mapServices.updateCurrentLocation(
+      mapServices.updateCurrentLocation(
         mapController: mapController,
         markers: markers,
+        onUpdateCurrentLocation: () {
+          setState(() {});
+        },
       );
       setState(() {});
     } on LocationServiceException catch (e) {

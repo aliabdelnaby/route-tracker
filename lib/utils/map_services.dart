@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -17,6 +16,7 @@ class MapServices {
   PlaceService placeService = PlaceService();
   LocationServices locationService = LocationServices();
   RoutesService routesService = RoutesService();
+  LatLng? currentLocation;
 
   Future<void> getPredictions({
     required String input,
@@ -36,14 +36,13 @@ class MapServices {
   }
 
   Future<List<LatLng>> getRouteData({
-    required LatLng currentLocation,
     required LatLng destination,
   }) async {
     LocationInfoModel origin = LocationInfoModel(
       location: LocationModel(
         latLng: LatLngModel(
-          latitude: currentLocation.latitude,
-          longitude: currentLocation.longitude,
+          latitude: currentLocation!.latitude,
+          longitude: currentLocation!.longitude,
         ),
       ),
     );
@@ -115,32 +114,35 @@ class MapServices {
     );
   }
 
-  Future<LatLng> updateCurrentLocation({
+  void updateCurrentLocation({
     required GoogleMapController mapController,
     required Set<Marker> markers,
-  }) async {
-    var locationData = await locationService.getCurrentLocation();
-    var currentLocation = LatLng(
-      locationData.latitude!,
-      locationData.longitude!,
-    );
+    required Function onUpdateCurrentLocation,
+  }) {
+    locationService.getRealTimeLocationData(
+      (locationData) {
+        currentLocation = LatLng(
+          locationData.latitude!,
+          locationData.longitude!,
+        );
 
-    var myLocationMarker = Marker(
-      markerId: const MarkerId("myLocation"),
-      position: currentLocation,
-    );
+        var myLocationMarker = Marker(
+          markerId: const MarkerId("myLocation"),
+          position: currentLocation!,
+        );
 
-    mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(locationData.latitude!, locationData.longitude!),
-          zoom: 15,
-        ),
-      ),
+        mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: currentLocation!,
+              zoom: 15,
+            ),
+          ),
+        );
+        markers.add(myLocationMarker);
+        onUpdateCurrentLocation();
+      },
     );
-    markers.add(myLocationMarker);
-
-    return currentLocation;
   }
 
   Future<PlaceDetailsModel> getPlaceDetails({required String placeId}) async {
