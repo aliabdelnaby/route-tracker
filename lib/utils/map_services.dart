@@ -7,6 +7,7 @@ import 'package:route_tracker/models/location_info/lat_lng.dart';
 import 'package:route_tracker/models/location_info/location.dart';
 import 'package:route_tracker/models/location_info/location_info.dart';
 import 'package:route_tracker/models/place_autocomplete_model/place_autocomplete_model.dart';
+import 'package:route_tracker/models/place_details_model/place_details_model.dart';
 import 'package:route_tracker/models/routes_model/routes_model.dart';
 import 'package:route_tracker/utils/google_maps_place_service.dart';
 import 'package:route_tracker/utils/location_service.dart';
@@ -17,7 +18,7 @@ class MapServices {
   LocationServices locationService = LocationServices();
   RoutesService routesService = RoutesService();
 
-  getPredictions({
+  Future<void> getPredictions({
     required String input,
     required String sessiontoken,
     required List<PlaceModel> places,
@@ -140,5 +141,9 @@ class MapServices {
     markers.add(myLocationMarker);
 
     return currentLocation;
+  }
+
+  Future<PlaceDetailsModel> getPlaceDetails({required String placeId}) async {
+    return await placeService.getPlaceDetails(placeId: placeId);
   }
 }
