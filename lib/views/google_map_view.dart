@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:route_tracker/models/location_info/lat_lng.dart';
+import 'package:route_tracker/models/location_info/location.dart';
+import 'package:route_tracker/models/location_info/location_info.dart';
 import 'package:route_tracker/models/place_autocomplete_model/place_autocomplete_model.dart';
+import 'package:route_tracker/models/routes_model/route.dart';
+import 'package:route_tracker/models/routes_model/routes_model.dart';
 import 'package:route_tracker/utils/google_maps_place_service.dart';
 import 'package:route_tracker/utils/location_service.dart';
+import 'package:route_tracker/utils/routes_service.dart';
 import 'package:route_tracker/widgets/custom_list_view_places.dart';
 import 'package:route_tracker/widgets/custom_search_text_field.dart';
 import 'package:uuid/uuid.dart';
@@ -21,21 +27,21 @@ class _GoogleMapViewState extends State<GoogleMapView> {
   late LocationServices locationService;
   late TextEditingController textEditingController;
   late GoogleMapsPlaceService googleMapsPlaceService;
+  late RoutesService routesService;
   late Uuid uuid;
+  late LatLng currentLocation;
+  late LatLng destination;
   String? sessiontoken;
   Set<Marker> markers = {};
   List<PlaceModel> places = [];
 
   @override
   void initState() {
-    initialCameraPosition = const CameraPosition(
-      target: LatLng(
-        26.839663247801774,
-        29.71044929719575,
-      ),
-    );
-    locationService = LocationServices();
     textEditingController = TextEditingController();
+    initialCameraPosition = const CameraPosition(target: LatLng(0, 0));
+    uuid = const Uuid();
+    locationService = LocationServices();
+    routesService = RoutesService();
     fetchPredictions();
     super.initState();
   }
@@ -95,6 +101,11 @@ class _GoogleMapViewState extends State<GoogleMapView> {
                   places.clear();
                   sessiontoken = null;
                   setState(() {});
+                  destination = LatLng(
+                    placeDetailsModel.geometry!.location!.lat!,
+                    placeDetailsModel.geometry!.location!.lng!,
+                  );
+                  getRouteData();
                 },
                 places: places,
                 googleMapsPlaceService: googleMapsPlaceService,
@@ -109,9 +120,14 @@ class _GoogleMapViewState extends State<GoogleMapView> {
   void updateCurrentLocation() async {
     try {
       var locationData = await locationService.getCurrentLocation();
+      currentLocation = LatLng(
+        locationData.latitude!,
+        locationData.longitude!,
+      );
+
       var myLocationMarker = Marker(
         markerId: const MarkerId("myLocation"),
-        position: LatLng(locationData.latitude!, locationData.longitude!),
+        position: currentLocation,
       );
 
       mapController.animateCamera(
@@ -131,5 +147,30 @@ class _GoogleMapViewState extends State<GoogleMapView> {
     } catch (e) {
       // TODO
     }
+  }
+
+  Future<RouteModel> getRouteData() async {
+    LocationInfoModel origin = LocationInfoModel(
+      location: LocationModel(
+        latLng: LatLngModel(
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+        ),
+      ),
+    );
+    LocationInfoModel destinationn = LocationInfoModel(
+      location: LocationModel(
+        latLng: LatLngModel(
+          latitude: destination.latitude,
+          longitude: destination.longitude,
+        ),
+      ),
+    );
+    RoutesModel routes = await routesService.fetchRoutes(
+      origin: origin,
+      destination: destinationn,
+    );
+
+    return routes.routes!.first;
   }
 }
